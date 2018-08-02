@@ -5,55 +5,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="theme-color" content="#000000">
-  <!--
-      manifest.json provides metadata used when your web app is added to the
-      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
-    -->
-  <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico"> -->
-  <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
   <title>FaceOff</title>
 </head>
 
 <body>
-  <!-- <noscript>
+  <noscript>
     Lets make some faces
   </noscript>
   <div id="root"></div>
-  <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  <!-- <canvas id="drawCanvas" width="400" height="300"></canvas>
-  <video id="inputVideo" width="400" height="400" autoPlay loop></video>
-
-</body>-->
   <video id="video" width="640" height="480" autoplay></video>
   <canvas id="canvas" width="640" height="480"></canvas>
   <script src="clmtrackr.js"></script>
   <script type="text/javascript">
 
-
-    // <video id="video" width="640" height="480" autoplay></video>
-    // <canvas id="canvas" width="640" height="480"></canvas>
-
-
-    // <script type="text/javascript">
-    // Grab elements, create settings, etc.
     var video = document.getElementById('video');
 
     // Get access to the camera!
@@ -61,34 +28,56 @@
       // Not adding `{ audio: true }` since we only want video now
       navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
         video.src = window.URL.createObjectURL(stream);
-        video.play();
+        //video.play();
       });
     }
 
     var canvas = document.getElementById('canvas');
     var videoInput = document.getElementById('video');
-    const ctracker = new clm.tracker();
-
+    const ctracker = new clm.tracker({ faceDetection: { useWebWorkers: true } });
+    let position44 = [];
+    let position50 = [];
     //const videoInput = document.getElementById('inputVideo'); // console.log("********", clm)
 
 
     ctracker.init();
     ctracker.start(videoInput);
 
+    console.log("ctracker-->", ctracker);
+
     function positionLoop() {
       requestAnimationFrame(positionLoop);
       var positions = ctracker.getCurrentPosition(); //
-      console.log("POSITIONS", positions)
-      // positions = [[x_0, y_0], [x_1,y_1], ... ] // // do something with the positions ... // }
-      positionLoop();
-      const canvasInput = document.getElementById('drawCanvas'); // const cc = canvasInput.getContext('2d');
-      function drawLoop() {
-        requestAnimationFrame(drawLoop);
-        cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
-        ctracker.draw(canvasInput);
-      }
-      drawLoop();
+      // console.log("Position 44", positions[44])
+      // console.log("Position 50", positions[50])
+      position44 = positions[44];
+      position50 = positions[50];
+      //console.log(position44)
+      // positions = [[x_0, y_0], [x_1,y_1], ... ] //
+      // do something with the positions ... //
+      //trackMouth(position44, position50)
+
+
     }
+    positionLoop();
+
+
+
+    const canvasInput = document.getElementById('canvas'); //
+    const cc = canvasInput.getContext('2d');
+
+    function drawLoop() {
+      requestAnimationFrame(drawLoop);
+      cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
+      ctracker.draw(canvasInput);
+      console.log(position44)
+      cc.moveTo(position44[0], position44[1])
+      cc.lineTo(position50[0], position50[1])
+      cc.strokeStyle = "red";
+      cc.stroke();
+    }
+    drawLoop();
+
 
   </script>
 </body>
