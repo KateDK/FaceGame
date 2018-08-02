@@ -9,8 +9,8 @@
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+  <!-- <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico"> -->
   <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -24,7 +24,7 @@
 </head>
 
 <body>
-  <noscript>
+  <!-- <noscript>
     Lets make some faces
   </noscript>
   <div id="root"></div>
@@ -38,6 +38,59 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+  <!-- <canvas id="drawCanvas" width="400" height="300"></canvas>
+  <video id="inputVideo" width="400" height="400" autoPlay loop></video>
+
+</body>-->
+  <video id="video" width="640" height="480" autoplay></video>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <script src="clmtrackr.js"></script>
+  <script type="text/javascript">
+
+
+    // <video id="video" width="640" height="480" autoplay></video>
+    // <canvas id="canvas" width="640" height="480"></canvas>
+
+
+    // <script type="text/javascript">
+    // Grab elements, create settings, etc.
+    var video = document.getElementById('video');
+
+    // Get access to the camera!
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      // Not adding `{ audio: true }` since we only want video now
+      navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+        video.src = window.URL.createObjectURL(stream);
+        video.play();
+      });
+    }
+
+    var canvas = document.getElementById('canvas');
+    var videoInput = document.getElementById('video');
+    const ctracker = new clm.tracker();
+
+    //const videoInput = document.getElementById('inputVideo'); // console.log("********", clm)
+
+
+    ctracker.init();
+    ctracker.start(videoInput);
+
+    function positionLoop() {
+      requestAnimationFrame(positionLoop);
+      var positions = ctracker.getCurrentPosition(); //
+      console.log("POSITIONS", positions)
+      // positions = [[x_0, y_0], [x_1,y_1], ... ] // // do something with the positions ... // }
+      positionLoop();
+      const canvasInput = document.getElementById('drawCanvas'); // const cc = canvasInput.getContext('2d');
+      function drawLoop() {
+        requestAnimationFrame(drawLoop);
+        cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
+        ctracker.draw(canvasInput);
+      }
+      drawLoop();
+    }
+
+  </script>
 </body>
 
 </html>
