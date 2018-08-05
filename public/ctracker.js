@@ -33,12 +33,15 @@ const INITIAL_STATE = {
   timers: [],
 };
 
-let apple = new Image();
+const apple = new Image();
 apple.src = 'AppleResized.png';
-let kiwi = new Image();
+const kiwi = new Image();
 kiwi.src = 'KiwiResized.png';
-let bomb = new Image();
+const bomb = new Image();
 bomb.src = 'BombResized.png';
+const boom = new sound('Canoon.mp3');
+const chomp = new sound('Chomp.mp3');
+const bite = new sound('Bite.mp3');
 
 const video = document.getElementById('video');
 // Get access to the camera
@@ -124,13 +127,13 @@ function checkEat() {
         points: state.points + item.points,
         timeLeft: state.timeLeft + item.points * MS_IN_SECOND,
       };
-      if (item.img === bomb) {
-        state = { ...state, bombsEaten: state.bombsEaten++ };
-        if (state.bombsEaten === 3 || state.bombsEaten > 3) {
+      if (item.isBomb) {
+        state = { ...state, bombsEaten: state.bombsEaten + 1 };
+        if (state.bombsEaten >= 3) {
           gameOver();
         }
       }
-
+      item.sound.play();
       renderHTML();
     }
   });
@@ -139,7 +142,7 @@ function checkEat() {
   }
 }
 
-const createItem = (img, experationFromNow, points) => {
+const createItem = (img, experationFromNow, points, sound, isBomb) => {
   let x =
     Math.floor(Math.random() * (canvas.width - ITEM_RADIUS * 2)) + ITEM_RADIUS;
   let y =
@@ -152,6 +155,8 @@ const createItem = (img, experationFromNow, points) => {
     img,
     experation: Date.now() + experationFromNow,
     points,
+    sound,
+    isBomb,
   };
   state = { ...state, foodItems: [...state.foodItems, newItem] };
   startTimeOut(clearItems, experationFromNow);
@@ -163,12 +168,16 @@ const foodGenerator = () => {
   let experation = color === 'red' ? RED_EXPIRATION : GREEN_EXPIRATION;
   let points = color === 'red' ? RED_POINTS : GREEN_POINTS;
   let img = color === 'red' ? apple : kiwi;
-  createItem(img, experation, points);
+  let sound = color === 'red' ? bite : chomp;
+  const isBomb = false;
+  createItem(img, experation, points, sound, isBomb);
 };
 
 const bombGenerator = () => {
   startTimeOut(bombGenerator, BOMB_TIMER);
-  createItem(bomb, BOMB_EXPIRATION, BOMB_POINTS);
+  const sound = boom;
+  const isBomb = true;
+  createItem(bomb, BOMB_EXPIRATION, BOMB_POINTS, sound, isBomb);
 };
 
 const clearItems = () => {
@@ -213,4 +222,19 @@ function startTimeOut(func, timeout) {
 function clearTimers() {
   state.timers.forEach(timerId => window.clearTimeout(timerId));
   state = { ...state, timers: [] };
+}
+
+function sound(src) {
+  this.sound = document.createElement('audio');
+  this.sound.src = src;
+  this.sound.setAttribute('preload', 'auto');
+  this.sound.setAttribute('controls', 'none');
+  this.sound.style.display = 'none';
+  document.body.appendChild(this.sound);
+  this.play = function() {
+    this.sound.play();
+  };
+  this.stop = function() {
+    this.sound.pause();
+  };
 }
