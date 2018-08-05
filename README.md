@@ -5,4 +5,6 @@ The [clmtrackr](https://github.com/auduno/clmtrackr) library was used for facial
 
 The app logo was made with [logomakr](https://logomakr.com/).
 
+currently not supported on mobile.
+
 
