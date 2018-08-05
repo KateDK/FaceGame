@@ -21,18 +21,18 @@
   <div class="App">
     <div class="top">
       <header class="App-header">
-        <img src="LogoMakr_6HzPXI.png" class="App-logo" alt="logo" />
-        <h1 class="App-title">Lets make some faces!</h1>
+        <img src="LogoApple.png" class="App-logo" alt="logo" />
+        <h1 class="App-title">HungryMouth</h1>
+        <!-- <h5 class="App-title">Lets grab a bite</h5> -->
       </header>
       <p class="App-intro" />
 
     </div>
     <div class="AppBody">
-      <div>
-        <button class="startGame btn btn-dark btn-lg" id="startGame">Start Game</button>
-
-        <h1 id="points">Points: </h1>
-        <h1 id="timer">Time Remaining:</h1>
+      <div class="gameNav nav flex-column flex-sm-row">
+        <button class="startGame btn btn-dark btn-lg navItem" id="startGame">Start Game</button>
+        <h1 id="points" class="navItem">Points: </h1>
+        <h1 id="timer" class="navItem">Time Remaining:</h1>
       </div>
       <div>
 
@@ -42,7 +42,11 @@
 
         </div>
       </div>
-
+      <div class="bottom">
+        <p>
+          Eat the fruite with your mouth, avoid the bombs!
+        </p>
+      </div>
       <script src="clmtrackr.js"></script>
       <script type="text/javascript" src="ctracker.js" />
 

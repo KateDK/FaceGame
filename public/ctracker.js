@@ -33,6 +33,13 @@ const INITIAL_STATE = {
   timers: [],
 };
 
+let apple = new Image();
+apple.src = 'AppleResized.png';
+let kiwi = new Image();
+kiwi.src = 'KiwiResized.png';
+let bomb = new Image();
+bomb.src = 'BombResized.png';
+
 const video = document.getElementById('video');
 // Get access to the camera
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -73,10 +80,13 @@ function drawLoop() {
   checkEat();
 
   state.foodItems.forEach(item => {
-    cc.beginPath();
-    cc.arc(item.x, item.y, item.radius, 0, Math.PI * 2, false);
-    cc.fillStyle = item.touchingMouth ? 'blue' : item.color;
-    cc.fill();
+    cc.drawImage(
+      item.img,
+      item.x - ITEM_RADIUS,
+      item.y - ITEM_RADIUS,
+      ITEM_RADIUS * 2,
+      ITEM_RADIUS * 2
+    );
   });
 }
 
@@ -89,7 +99,7 @@ function dist(x1, y1, x2, y2) {
 }
 
 function checkEat() {
-  var positions = ctracker.getCurrentPosition(); //
+  let positions = ctracker.getCurrentPosition(); //
   if (!positions) {
     return;
   }
@@ -109,7 +119,17 @@ function checkEat() {
     }
 
     if (item.touchingMouth) {
-      state = { ...state, points: state.points + item.points };
+      state = {
+        ...state,
+        points: state.points + item.points,
+        timeLeft: state.timeLeft + item.points * MS_IN_SECOND,
+      };
+      if (item.img === bomb) {
+        state = { ...state, bombsEaten: state.bombsEaten++ };
+        if (state.bombsEaten === 3 || state.bombsEaten > 3) {
+          gameOver();
+        }
+      }
 
       renderHTML();
     }
@@ -119,7 +139,7 @@ function checkEat() {
   }
 }
 
-const createItem = (color, experationFromNow, points) => {
+const createItem = (img, experationFromNow, points) => {
   let x =
     Math.floor(Math.random() * (canvas.width - ITEM_RADIUS * 2)) + ITEM_RADIUS;
   let y =
@@ -129,7 +149,7 @@ const createItem = (color, experationFromNow, points) => {
     y,
     touchingMouth: false,
     radius: ITEM_RADIUS,
-    color,
+    img,
     experation: Date.now() + experationFromNow,
     points,
   };
@@ -142,12 +162,13 @@ const foodGenerator = () => {
   let color = Math.random() > 0.25 ? 'red' : 'green';
   let experation = color === 'red' ? RED_EXPIRATION : GREEN_EXPIRATION;
   let points = color === 'red' ? RED_POINTS : GREEN_POINTS;
-  createItem(color, experation, points);
+  let img = color === 'red' ? apple : kiwi;
+  createItem(img, experation, points);
 };
 
 const bombGenerator = () => {
   startTimeOut(bombGenerator, BOMB_TIMER);
-  createItem('black', BOMB_EXPIRATION, BOMB_POINTS);
+  createItem(bomb, BOMB_EXPIRATION, BOMB_POINTS);
 };
 
 const clearItems = () => {
