@@ -54,8 +54,16 @@ let state = {
   ...INITIAL_STATE,
 };
 
-const renderPoints = () =>
-  (document.getElementById('points').innerHTML = `Points:  ${state.points}`);
+const renderHTML = () => {
+  document.getElementById('points').innerHTML = `Points:  ${state.points}`;
+  if (state.gameOver) {
+    document.getElementById('timer').innerHTML = 'GAME OVER!!!';
+  } else {
+    document.getElementById(
+      'timer'
+    ).innerHTML = `Time Remaining: ${state.timeLeft / MS_IN_SECOND}`;
+  }
+};
 //food item: {x:0,y:0,points:0,color:""}
 
 function drawLoop() {
@@ -103,7 +111,7 @@ function checkEat() {
     if (item.touchingMouth) {
       state = { ...state, points: state.points + item.points };
 
-      renderPoints();
+      renderHTML();
     }
   });
   if (eat) {
@@ -126,11 +134,11 @@ const createItem = (color, experationFromNow, points) => {
     points,
   };
   state = { ...state, foodItems: [...state.foodItems, newItem] };
-  startTimer(clearItems, experationFromNow);
+  startTimeOut(clearItems, experationFromNow);
 };
 
 const foodGenerator = () => {
-  startTimer(foodGenerator, FOOD_TIMER);
+  startTimeOut(foodGenerator, FOOD_TIMER);
   let color = Math.random() > 0.25 ? 'red' : 'green';
   let experation = color === 'red' ? RED_EXPIRATION : GREEN_EXPIRATION;
   let points = color === 'red' ? RED_POINTS : GREEN_POINTS;
@@ -138,7 +146,7 @@ const foodGenerator = () => {
 };
 
 const bombGenerator = () => {
-  startTimer(bombGenerator, BOMB_TIMER);
+  startTimeOut(bombGenerator, BOMB_TIMER);
   createItem('black', BOMB_EXPIRATION, BOMB_POINTS);
 };
 
@@ -150,23 +158,38 @@ const clearItems = () => {
   state = { ...state, foodItems: filteredItems };
 };
 
-const gameOver = () => {};
+function timerCountDown() {
+  startTimeOut(timerCountDown, MS_IN_SECOND);
+  state = { ...state, timeLeft: state.timeLeft - MS_IN_SECOND };
+  renderHTML();
+  if (state.timeLeft <= 0) {
+    gameOver();
+  }
+}
+
+function gameOver() {
+  state = { ...state, gameOver: true, foodItems: [] };
+  clearTimers();
+  renderHTML();
+}
 
 const startGame = () => {
   clearTimers();
   state = { ...INITIAL_STATE };
-  renderPoints();
+  renderHTML();
   foodGenerator();
-  startTimer(bombGenerator, BOMB_TIMER_INITIAL);
+  startTimeOut(bombGenerator, BOMB_TIMER_INITIAL);
+  startTimeOut(timerCountDown, MS_IN_SECOND);
 };
 
 document.getElementById('startGame').addEventListener('click', startGame);
 
-function startTimer(func, timeout) {
+function startTimeOut(func, timeout) {
   let timerId = window.setTimeout(func, timeout);
   state = { ...state, timers: [...state.timers, timerId] };
 }
 
 function clearTimers() {
   state.timers.forEach(timerId => window.clearTimeout(timerId));
+  state = { ...state, timers: [] };
 }
