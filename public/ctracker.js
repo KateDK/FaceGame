@@ -32,6 +32,7 @@ const INITIAL_STATE = {
   gameOver: false,
   timers: [],
   lives: 3,
+  explosions: [],
 };
 
 const apple = new Image();
@@ -42,6 +43,8 @@ const bomb = new Image();
 bomb.src = 'BombResized.png';
 const life = new Image();
 life.src = 'LifeResized.png';
+const explosionSprites = new Image();
+explosionSprites.src = 'explosion.png';
 const boom = new sound('Canoon.mp3');
 const chomp = new sound('Chomp.mp3');
 const bite = new sound('Bite.mp3');
@@ -84,6 +87,24 @@ function drawLoop() {
   cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
 
   checkEat();
+
+  state.explosions.forEach(explosion => {
+    let explosionX = (explosion.frame % 8) * 60;
+    let explosionY = Math.floor(explosion.frame / 8) * 60;
+    let dx = explosion.x - ITEM_RADIUS;
+    let dy = explosion.y - ITEM_RADIUS;
+    cc.drawImage(
+      explosionSprites,
+      explosionX,
+      explosionY,
+      60,
+      60,
+      dx,
+      dy,
+      60,
+      60
+    );
+  });
 
   state.foodItems.forEach(item => {
     cc.drawImage(
@@ -139,7 +160,9 @@ function checkEat() {
           ...state,
           bombsEaten: state.bombsEaten + 1,
           lives: state.lives - 1,
+          explosions: [...state.explosions, { frame: 0, x: item.x, y: item.y }],
         };
+
         if (state.bombsEaten >= 3) {
           gameOver();
         }
@@ -157,7 +180,8 @@ const createItem = (img, experationFromNow, points, sound, isBomb) => {
   let x =
     Math.floor(Math.random() * (canvas.width - ITEM_RADIUS * 2)) + ITEM_RADIUS;
   let y =
-    Math.floor(Math.random() * (canvas.height - ITEM_RADIUS * 2)) + ITEM_RADIUS;
+    Math.floor(Math.random() * (canvas.height - ITEM_RADIUS * 3)) +
+    ITEM_RADIUS * 2;
   newItem = {
     x,
     y,
@@ -208,8 +232,18 @@ function timerCountDown() {
   }
 }
 
+function explosionTimer() {
+  startTimeOut(explosionTimer, 20);
+  let newExplosions = [...state.explosions];
+  newExplosions.forEach(explosion => {
+    explosion.frame = explosion.frame + 1;
+  });
+  newExplosions = newExplosions.filter(explosion => explosion.frame < 48);
+  state = { ...state, explosions: newExplosions };
+}
+
 function gameOver() {
-  state = { ...state, gameOver: true, foodItems: [] };
+  state = { ...state, gameOver: true, foodItems: [], explosions: [] };
   clearTimers();
   renderHTML();
 }
@@ -221,6 +255,7 @@ const startGame = () => {
   foodGenerator();
   startTimeOut(bombGenerator, BOMB_TIMER_INITIAL);
   startTimeOut(timerCountDown, MS_IN_SECOND);
+  startTimeOut(explosionTimer, 100);
 };
 
 document.getElementById('startGame').addEventListener('click', startGame);
