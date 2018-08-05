@@ -6,7 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="theme-color" content="#000000">
 
-  <title>FaceOff</title>
+  <title>HungyMouth</title>
+
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
 </head>
 
 <body>
@@ -14,72 +18,35 @@
     Lets make some faces
   </noscript>
   <div id="root"></div>
+  <div class="App">
+    <div class="top">
+      <header class="App-header">
+        <img src="LogoMakr_6HzPXI.png" class="App-logo" alt="logo" />
+        <h1 class="App-title">Lets make some faces!</h1>
+      </header>
+      <p class="App-intro" />
 
+    </div>
+    <div class="AppBody">
+      <div>
+        <button class="startGame btn btn-dark btn-lg" id="startGame">Start Game</button>
 
-  <video id="video" width="640" height="480" autoplay></video>
-  <canvas id="canvas" width="640" height="480"></canvas>
-  <script src="clmtrackr.js"></script>
-  <script type="text/javascript">
+        <h1 id="points">Points: </h1>
+      </div>
+      <div>
 
-    var video = document.getElementById('video');
+        <div class='videocontainer'>
+          <video id="video" width="640" height="360" autoplay></video>
+          <canvas id="canvas" width="640" height="360"></canvas>
 
-    // Get access to the camera!
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      // Not adding `{ audio: true }` since we only want video now
-      navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
-        video.src = window.URL.createObjectURL(stream);
-        //video.play();
-      });
-    }
+        </div>
+      </div>
 
-    var canvas = document.getElementById('canvas');
-    var videoInput = document.getElementById('video');
-    const ctracker = new clm.tracker({ faceDetection: { useWebWorkers: true } });
-    let position44 = [];
-    let position50 = [];
-    //const videoInput = document.getElementById('inputVideo'); // console.log("********", clm)
+      <script src="clmtrackr.js"></script>
+      <script type="text/javascript" src="ctracker.js" />
 
+    </div>
 
-    ctracker.init();
-    ctracker.start(videoInput);
-
-    console.log("ctracker-->", ctracker);
-
-    function positionLoop() {
-      requestAnimationFrame(positionLoop);
-      var positions = ctracker.getCurrentPosition(); //
-      // console.log("Position 44", positions[44])
-      // console.log("Position 50", positions[50])
-      position44 = positions[44];
-      position50 = positions[50];
-      //console.log(position44)
-      // positions = [[x_0, y_0], [x_1,y_1], ... ] //
-      // do something with the positions ... //
-      //trackMouth(position44, position50)
-
-
-    }
-    positionLoop();
-
-
-
-    const canvasInput = document.getElementById('canvas'); //
-    const cc = canvasInput.getContext('2d');
-
-    function drawLoop() {
-      requestAnimationFrame(drawLoop);
-      cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
-      ctracker.draw(canvasInput);
-      console.log(position44)
-      cc.moveTo(position44[0], position44[1])
-      cc.lineTo(position50[0], position50[1])
-      cc.strokeStyle = "red";
-      cc.stroke();
-    }
-    drawLoop();
-
-
-  </script>
 </body>
 
 </html>
