@@ -65,6 +65,7 @@ video {
 .bottom {
   align-self: flex-end;
   position: relative;
+  display: block;
   order: 2;
   color: antiquewhite;
 }

@@ -31,6 +31,7 @@ const INITIAL_STATE = {
   bombsEaten: 0,
   gameOver: false,
   timers: [],
+  lives: 3,
 };
 
 const apple = new Image();
@@ -39,6 +40,8 @@ const kiwi = new Image();
 kiwi.src = 'KiwiResized.png';
 const bomb = new Image();
 bomb.src = 'BombResized.png';
+const life = new Image();
+life.src = 'LifeResized.png';
 const boom = new sound('Canoon.mp3');
 const chomp = new sound('Chomp.mp3');
 const bite = new sound('Bite.mp3');
@@ -91,6 +94,10 @@ function drawLoop() {
       ITEM_RADIUS * 2
     );
   });
+
+  for (let i = 0; i < state.lives; i++) {
+    cc.drawImage(life, 40 * i, 0);
+  }
 }
 
 drawLoop();
@@ -128,7 +135,11 @@ function checkEat() {
         timeLeft: state.timeLeft + item.points * MS_IN_SECOND,
       };
       if (item.isBomb) {
-        state = { ...state, bombsEaten: state.bombsEaten + 1 };
+        state = {
+          ...state,
+          bombsEaten: state.bombsEaten + 1,
+          lives: state.lives - 1,
+        };
         if (state.bombsEaten >= 3) {
           gameOver();
         }
