@@ -88,6 +88,7 @@ function drawLoop() {
 
   checkEat();
 
+  //draw explosion sprite animation
   state.explosions.forEach(explosion => {
     let explosionX = (explosion.frame % 8) * 60;
     let explosionY = Math.floor(explosion.frame / 8) * 60;
@@ -106,6 +107,7 @@ function drawLoop() {
     );
   });
 
+  //draw food and bomb items
   state.foodItems.forEach(item => {
     cc.drawImage(
       item.img,
@@ -116,6 +118,7 @@ function drawLoop() {
     );
   });
 
+  //draw lives
   for (let i = 0; i < state.lives; i++) {
     cc.drawImage(life, 40 * i, 0);
   }
