@@ -48,6 +48,7 @@ explosionSprites.src = 'explosion.png';
 const boom = new sound('Canoon.mp3');
 const chomp = new sound('Chomp.mp3');
 const bite = new sound('Bite.mp3');
+const loose = new sound('End.mp3');
 
 const video = document.getElementById('video');
 // Get access to the camera
@@ -249,6 +250,7 @@ function gameOver() {
   state = { ...state, gameOver: true, foodItems: [], explosions: [] };
   clearTimers();
   renderHTML();
+  loose.play();
 }
 
 const startGame = () => {
