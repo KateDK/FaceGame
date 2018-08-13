@@ -1,4 +1,4 @@
-# HungryMouth
+# HungryMouth - Winner of People Choice by Grace Hopper students
 Play the game here: https://hungrymouth.herokuapp.com/
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
