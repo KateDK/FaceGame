@@ -1,7 +1,17 @@
+html {
+  height: 100%;
+}
 body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  height: 100%;
+}
+.AppBody {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
 }
 .videocontainer {
   position: relative;
@@ -63,11 +73,20 @@ video {
 }
 
 .bottom {
-  align-self: flex-end;
+  /* position: absolute; */
+  top: 360px;
+
   position: relative;
-  display: block;
+  align-self: flex-end;
+
+  display: inline-block;
   order: 2;
   color: antiquewhite;
+  background-color: cornflowerblue;
+}
+.bottomText {
+  position: relative;
+  /* justify-content: flex-end; */
 }
 /* @keyframes App-logo-spin {
   from {
